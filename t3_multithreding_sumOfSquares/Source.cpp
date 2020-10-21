@@ -15,26 +15,29 @@ int main() {
 	std::cin >> n;
 	if (n < 0)
 		n = 0;
-	//get t from user
+	//get number of threads from user
 	std::cout << "\nHow many threads? ";
-	int t = 0;
-	std::cin >> t;
-	if (t > n)
-		t = n;
+	int numOfThreads = 0;
+	std::cin >> numOfThreads;
+	if (numOfThreads > n)
+		numOfThreads = n;
+	else if (numOfThreads < 1)
+		numOfThreads = 1;
 
 	//--------------create threads---------------
 	unsigned long total = 0;
 	std::vector<std::thread> threads;
-	const int subdivisionSize = n / t; //each thread will compute at least subdivisioSize squares
-	const int reminder = n % t;
-	for (int i = 0, min=0, max=0; i < t; i++) {
+	//the range [1 ,n] is divided into a number of subsets equal to numOfThreads
+	const int subsetSize = n / numOfThreads;
+	const int reminder = n % numOfThreads;
+	for (int i = 0, min=0, max=0; i < numOfThreads; i++) {
 		min = max + 1;
 		//the first threads will compute one additional square
 		//to account for the reminder
 		if (i < reminder)
-			max = min + subdivisionSize;
+			max = min + subsetSize;
 		else
-			max = min + subdivisionSize-1;
+			max = min + subsetSize-1;
 		threads.push_back(std::thread(sumSquares, min, max, &total));
 	}
 	//wait for threads to finish
